@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data: https://*.supabase.co; connect-src https://*.supabase.co; base-uri 'none'; form-action 'self'; object-src 'none'">
+  <title>Birthday wishes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero wrap">
+    <div class="garland" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <h1 id="headline">Happy birthday</h1>
+    <p id="intro"></p>
+    <a class="btn marigold" href="#add">Write a wish</a>
+  </header>
+
+  <main class="wrap">
+    <section id="add" class="panel" aria-labelledby="add-title">
+      <h2 id="add-title" class="thanks form-title">Write your wish</h2>
+
+      <form id="wish-form" class="form-grid" novalidate>
+        <div>
+          <label for="name">Your name</label>
+          <input id="name" type="text" maxlength="60" autocomplete="name" required>
+        </div>
+
+        <div>
+          <label for="message">Your wish</label>
+          <textarea id="message" maxlength="1500" required></textarea>
+          <span class="hint"><span id="chars">0</span> / 1500</span>
+        </div>
+
+        <div>
+          <label>Photo <span class="hint">(optional)</span></label>
+          <div class="photo-pick">
+            <input id="photo" type="file" accept="image/*">
+            <label for="photo" class="btn ghost small pick-btn">Choose a photo</label>
+            <img id="preview" class="photo-preview" alt="Selected photo preview" hidden>
+            <button id="clear-photo" type="button" class="btn ghost small" hidden>Remove photo</button>
+          </div>
+          <span class="hint">Photos are resized and location data is removed before upload.</span>
+        </div>
+
+        <div id="code-field">
+          <label for="code">Passcode <span class="hint">(from the invite)</span></label>
+          <input id="code" type="password" autocomplete="off" required>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div><button id="submit" class="btn" type="submit">Send wish</button></div>
+      </form>
+
+      <div id="sent" hidden>
+        <p class="thanks">Thank you! Your wish has been sent.</p>
+        <p class="hint sent-note">It will appear on the wall once it's been approved.</p>
+        <button id="another" class="btn ghost small" type="button">Write another wish</button>
+      </div>
+    </section>
+
+    <div class="wall-head">
+      <h2>Wishes so far</h2>
+      <span class="count" id="count"></span>
+    </div>
+    <section id="wall" class="wall" aria-live="polite"></section>
+  </main>
+
+  <dialog class="lightbox" id="lightbox">
+    <img id="lightbox-img" alt="">
+    <button class="btn small close" id="lightbox-close" type="button">Close</button>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

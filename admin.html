@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data: https://*.supabase.co; connect-src https://*.supabase.co; base-uri 'none'; form-action 'self'; object-src 'none'">
+  <title>Review wishes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Sign in -->
+  <section id="login-view" class="panel login" hidden>
+    <h1 class="thanks">Review wishes</h1>
+    <form id="login-form" class="form-grid" novalidate>
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" required>
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+      </div>
+      <p id="login-status" class="status" role="status" aria-live="polite"></p>
+      <div><button class="btn" type="submit" id="login-btn">Sign in</button></div>
+    </form>
+  </section>
+
+  <!-- Moderation -->
+  <div id="admin-view" class="wrap" hidden>
+    <div class="admin-bar">
+      <h1>Review wishes</h1>
+      <div class="mod-actions">
+        <button class="btn ghost small" id="refresh" type="button">Refresh</button>
+        <button class="btn ghost small" id="logout" type="button">Sign out</button>
+      </div>
+    </div>
+
+    <div class="tabs" role="group" aria-label="Filter wishes">
+      <button class="btn ghost small" data-filter="pending" aria-pressed="true" type="button">Waiting for approval <span id="n-pending"></span></button>
+      <button class="btn ghost small" data-filter="approved" aria-pressed="false" type="button">On the wall <span id="n-approved"></span></button>
+    </div>
+
+    <p id="admin-status" class="status" role="status" aria-live="polite"></p>
+    <section id="list" class="mod-list"></section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
