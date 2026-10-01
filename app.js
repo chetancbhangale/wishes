@@ -6,9 +6,65 @@
   const $ = (id) => document.getElementById(id);
 
   // ---------- Personalise ----------
-  $("headline").textContent = `Happy birthday, ${cfg.NAME}`;
-  $("intro").textContent = cfg.INTRO;
+  $("hero-name").textContent = cfg.NAME;
+  $("wall-name").textContent = cfg.NAME;
+  $("intro").textContent = cfg.INTRO || "";
   document.title = `Wishes for ${cfg.NAME}`;
+
+  // Optional photo of her in the hero (put the image file in the repo)
+  if (cfg.PHOTO) {
+    $("hero-photo-img").src = cfg.PHOTO;
+    $("hero-photo-img").alt = cfg.NAME;
+    $("hero-photo-caption").textContent = cfg.PHOTO_CAPTION || "";
+    $("hero-photo").hidden = false;
+  }
+
+  // Optional countdown, from BIRTHDAY: "YYYY-MM-DD"
+  if (cfg.BIRTHDAY) {
+    const [y, m, d] = cfg.BIRTHDAY.split("-").map(Number);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const days = Math.round((new Date(y, m - 1, d) - today) / 86400000);
+    let text = "";
+    if (days > 1) text = `${days} days to go`;
+    else if (days === 1) text = "Tomorrow!";
+    else if (days === 0) text = "It's her birthday today!";
+    if (text) { $("countdown").textContent = text; $("countdown").hidden = false; }
+  }
+
+  // ---------- Confetti (one burst on load, one when a wish is sent) ----------
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function confetti(count = 140) {
+    if (reduceMotion) return;
+    const c = $("confetti"), ctx = c.getContext("2d");
+    const dpr = window.devicePixelRatio || 1;
+    c.width = innerWidth * dpr; c.height = innerHeight * dpr; ctx.scale(dpr, dpr);
+    const colors = ["#f4a93a", "#ffc94d", "#e8607a", "#3e8e5a", "#b9a6f0", "#ffffff"];
+    const bits = Array.from({ length: count }, () => ({
+      x: innerWidth / 2 + (Math.random() - .5) * innerWidth * .3,
+      y: innerHeight * .35,
+      vx: (Math.random() - .5) * 14,
+      vy: -Math.random() * 13 - 4,
+      r: Math.random() * Math.PI,
+      vr: (Math.random() - .5) * .3,
+      w: 6 + Math.random() * 6, h: 8 + Math.random() * 8,
+      color: colors[(Math.random() * colors.length) | 0],
+      round: Math.random() < .3
+    }));
+    const start = performance.now();
+    (function frame(t) {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      for (const b of bits) {
+        b.vy += .35; b.vx *= .99; b.x += b.vx; b.y += b.vy; b.r += b.vr;
+        ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.r); ctx.fillStyle = b.color;
+        if (b.round) { ctx.beginPath(); ctx.arc(0, 0, b.w / 2, 0, 7); ctx.fill(); }
+        else ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h * Math.abs(Math.cos(b.r * 2)) + 2);
+        ctx.restore();
+      }
+      if (t - start < 3200) requestAnimationFrame(frame);
+      else ctx.clearRect(0, 0, innerWidth, innerHeight);
+    })(start);
+  }
+  setTimeout(() => confetti(), 350);
 
   // Passcode can come from the invite link: index.html?code=xyz
   const params = new URLSearchParams(location.search);
@@ -122,7 +178,9 @@
       $("clear-photo").click();
       setStatus("");
       form.hidden = true;
+      $("add-title").hidden = true;
       $("sent").hidden = false;
+      confetti(110);
     } catch (err) {
       console.error(err);
       setStatus(err?.message || "The wish couldn't be sent. Check your connection and try again.", "error");
@@ -133,6 +191,7 @@
 
   $("another").addEventListener("click", () => {
     $("sent").hidden = true;
+    $("add-title").hidden = false;
     form.hidden = false;
     $("name").focus();
   });
@@ -171,6 +230,7 @@
       note.className = "note";
 
       if (w.photo_path && urls[w.photo_path]) {
+        note.classList.add("has-photo");
         const fig = document.createElement("figure");
         const btn = document.createElement("button");
         btn.type = "button";
@@ -215,7 +275,9 @@
   if (cfg.SHOW_WALL === false) {
     document.querySelector(".wall-head").hidden = true;
     $("wall").hidden = true;
+    $("see-wall").hidden = true;
   } else {
     loadWall();
   }
 })();
+
