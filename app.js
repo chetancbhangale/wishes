@@ -1,7 +1,14 @@
 (() => {
   const cfg = window.WISHES_CONFIG;
-  const db = supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
-    auth: { persistSession: false }
+  // Supabase library loads asynchronously; wait for it only when data is needed.
+  const dbReady = new Promise((resolve, reject) => {
+    const make = () => resolve(window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+      auth: { persistSession: false }
+    }));
+    if (window.supabase?.createClient) return make();
+    const tag = document.getElementById("sb-lib");
+    tag.addEventListener("load", make);
+    tag.addEventListener("error", () => reject(new Error("Couldn't connect. Check your internet and refresh the page.")));
   });
   const $ = (id) => document.getElementById(id);
   const NAME = cfg.NAME || "her";
@@ -200,6 +207,8 @@ Thank you for being part of this.`;
 
     $("submit").disabled = true;
     try {
+      setStatus("Connecting…");
+      const db = await dbReady;
       setStatus("Checking passcode…");
       const { data: ok, error: codeErr } = await db.rpc("check_passcode", { p_code: code });
       if (codeErr) throw codeErr;
@@ -262,6 +271,9 @@ Thank you for being part of this.`;
 
   async function loadWall() {
     const wall = $("wall");
+    let db;
+    try { db = await dbReady; }
+    catch { wall.innerHTML = ""; wall.append(placeholder("Couldn't load wishes", "Check your internet and refresh the page.", GIFT)); return; }
     const { data, error } = await db
       .from("wishes")
       .select("id, name, message, photo_path, created_at")

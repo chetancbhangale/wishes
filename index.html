@@ -12,10 +12,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' blob: data: https://*.supabase.co; connect-src https://*.supabase.co; base-uri 'none'; form-action 'self'; object-src 'none'">
   <title>Birthday wishes</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon-192.png">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json?v=6">
+  <link rel="icon" href="favicon.ico?v=6" sizes="any">
+  <link rel="icon" href="favicon.svg?v=6" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png?v=6" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=6">
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
   <header class="appbar">
@@ -144,8 +146,9 @@
 
   <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+  <!-- app.js runs first so buttons work instantly; Supabase loads in the background -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js" id="sb-lib" async></script>
+  <script src="config.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
