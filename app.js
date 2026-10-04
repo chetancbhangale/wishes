@@ -24,16 +24,61 @@
     avatar.textContent = NAME.charAt(0).toUpperCase();
   }
 
-  let countdownText = "";
+  // ---------- Live countdown (BIRTHDAY: "YYYY-MM-DD") ----------
+  let isBirthday = false;
   if (cfg.BIRTHDAY) {
     const [y, m, d] = cfg.BIRTHDAY.split("-").map(Number);
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    const days = Math.round((new Date(y, m - 1, d) - today) / 86400000);
-    if (days > 1) countdownText = `${days} days to go`;
-    else if (days === 1) countdownText = "Tomorrow!";
-    else if (days === 0) countdownText = "Today's the day 🎉";
-    if (countdownText) { $("countdown").textContent = countdownText; $("countdown").hidden = false; }
+    const start = new Date(y, m - 1, d);        // local midnight on the day
+    const end = new Date(y, m - 1, d + 1);
+    const pad = (n) => String(n).padStart(2, "0");
+    $("countdown-label").textContent = `Counting down to ${NAME}'s birthday`;
+
+    const tick = () => {
+      const now = new Date();
+      if (now >= end) {                          // birthday has passed
+        $("countdown").hidden = true;
+        $("today-chip").hidden = true;
+        return clearInterval(timer);
+      }
+      if (now >= start) {                        // it's the day
+        isBirthday = true;
+        $("countdown").hidden = true;
+        $("today-chip").textContent = "🎉 It's her birthday today!";
+        $("today-chip").hidden = false;
+        return;
+      }
+      const s = Math.floor((start - now) / 1000);
+      $("cd-days").textContent = Math.floor(s / 86400);
+      $("cd-hours").textContent = pad(Math.floor(s / 3600) % 24);
+      $("cd-mins").textContent = pad(Math.floor(s / 60) % 60);
+      $("cd-secs").textContent = pad(s % 60);
+      $("countdown").hidden = false;
+    };
+    const timer = setInterval(tick, 1000);
+    tick();
   }
+
+  // ---------- Note to friends ----------
+  const DEFAULT_MESSAGE =
+`${NAME}'s birthday is almost here, and I'm gathering wishes from the people who make her life brighter.
+
+Write her a few words: a favourite memory, a moment that still makes you laugh, or simply what she means to you. Add a photo if you have one.
+
+On her birthday, I'll surprise her with all of them in one place. Please keep it a secret until then!
+
+Thank you for being part of this.`;
+
+  $("note-text").textContent = cfg.MESSAGE || DEFAULT_MESSAGE;
+  if (cfg.FROM) {
+    $("note-title").textContent = `A note from ${cfg.FROM}`;
+    $("note-avatar").textContent = cfg.FROM.charAt(0).toUpperCase();
+    $("note-sign").textContent = `With love, ${cfg.FROM}`;
+    $("note-sign").hidden = false;
+  } else {
+    $("note-avatar").textContent = "♥";
+  }
+  $("note-sub").textContent = `To everyone celebrating ${NAME}`;
+
   $("appbar-sub").textContent = "Send your wishes 🎉";
 
   // Passcode can come from the invite link: ?code=xyz
@@ -291,4 +336,5 @@
   } else {
     loadWall();
   }
+  if (isBirthday) setTimeout(() => confetti(160), 500);
 })();
