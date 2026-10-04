@@ -13,6 +13,8 @@ window.WISHES_CONFIG = {
   // false = friends can only submit; the wall stays hidden until you
   // switch this to true (e.g. on the birthday) and re-upload config.js.
   SHOW_WALL: true,
+  BIRTHDAY: "2026-10-16",
+  FROM: "Chetan",
 
   BUCKET: "wish-photos"
 };
